@@ -1,0 +1,56 @@
+﻿@model IEnumerable<FootBallWebLaba1.Models.Stadium>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Стадіони</h1>
+
+@*<p>
+    <a asp-action="Create">Додати стадіон</a>
+</p>*@
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.StadiumLocation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StadiumCapacity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StadiumEstablismentDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Club)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.StadiumLocation)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StadiumCapacity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StadiumEstablismentDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Club.ClubName)
+            </td>
+
+                    <td>
+                        <div> <a asp-action="Details"  class="btn btn-primary mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px" asp-route-id="@item.StadiumId">Команда власник</a> </div>
+                        @if (User.IsInRole("admin"))
+                {
+                    <a asp-action="Edit" class="btn btn-info mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px" asp-route-id="@item.StadiumId">Редагувати</a>
+                }
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,0 +1,141 @@
+﻿@model IEnumerable<FootBallWebLaba1.Models.Club>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Команди</h1>
+
+@*@if (User.IsInRole("admin"))
+{
+    <div>
+        <h3>Оберіть файл для завантаження</h3>
+        @using (Html.BeginForm("ImportFromExcel", "Clubs", FormMethod.Post, new { enctype = "multipart/form-data", id = "frm-exel" }))
+        {
+            <div>
+                Завантажити Exel-файл:
+                <input type="file" name="fileExel" id="fileExel"  />
+                <div>
+                    <input type="submit" value="Завантажити" />
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<div>
+    @if(ViewBag.importSuccess != null)
+    {
+        <a>@ViewBag.importSuccess</a>
+    }
+    
+</div>
+
+<div>
+    <h3>Завантажити інформацію про команди</h3>
+    <a asp-action="ExportToExcel" class="btn btn-primary mt-1 mb-1 d-inline-block" style="font-size:12px; padding:5px 7px; border-radius: 10px">Завантажити</a>
+</div>*@
+
+@if (User.IsInRole("admin"))
+{
+    <p>
+        <a asp-action="Create" class="btn btn-success mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px">Додати команду</a>
+    </p>
+    <p>
+        <a asp-action="PosRequest" class="btn btn-success mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px">Запит 1</a>
+
+        <a asp-action="PlayerGoalRequest" class="btn btn-success mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px">Запит 2</a>
+
+        <a asp-action="GoalsRequest" class="btn btn-success mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px">Запит 3</a>
+
+        <a asp-action="ClubRequest" class="btn btn-success mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px">Запит 4</a>
+
+        <a asp-action="MatchRequest" class="btn btn-success mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px">Запит 5</a>
+
+        <a asp-action="ClubAllStadiumRequest" class="btn btn-success mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px">Склад Запит 1</a>
+
+        <a asp-action="ClubOnlyStadiumRequest" class="btn btn-success mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px">Склад Запит 2</a>
+
+        <a asp-action="ClubNotStadiumRequest" class="btn btn-success mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px">Склад Запит 3</a>
+    </p>
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ClubName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClubOrigin)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClubPlayerQuantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClubCoachName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClubEstablishmentDate)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ClubName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ClubOrigin)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ClubPlayerQuantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ClubCoachName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ClubEstablishmentDate)
+            </td>
+                    <td>
+                        <a asp-action="PlayersList" class="btn btn-primary mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px" asp-route-id="@item.ClubId">Список гравців</a>
+                    @if (User.IsInRole("admin"))
+                    {
+                        <a asp-action="Edit" class="btn btn-info mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px" asp-route-id="@item.ClubId">Редагувати</a> 
+                        <a asp-action="Delete" class="btn btn-danger mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px" asp-route-id="@item.ClubId">Видалити</a>
+                    }
+                </td>
+            
+        </tr>
+}
+    </tbody>
+</table>
+
+@*
+<div class="container">
+    <div id="chart1"></div>
+</div>
+@section scripts
+    {
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+        google.charts.load('current', {'packages': ['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart()
+        {
+            $.get('api/Chart/JsonDataClub', function(JsonDataClub)
+            {
+                data = google.visualization.arrayToDataTable(JsonDataClub, false);
+                var option = {
+                    title: "Співідношення кількості гравців та команд",
+                    width: 500,
+                    height: 400
+                };
+                chart = new google.visualization.PieChart(document.getElementById('chart1'));
+                chart.draw(data, option);
+            })
+        }
+    </script>
+}*@

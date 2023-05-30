@@ -1,0 +1,53 @@
+﻿@model FootBallWebLaba1.Models.Club
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Створення команди</h1>
+
+<h4></h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="ClubName" class="control-label"></label>
+                <input asp-for="ClubName" class="form-control" />
+                <span asp-validation-for="ClubName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ClubOrigin" class="control-label"></label>
+                <input asp-for="ClubOrigin" class="form-control" />
+                <span asp-validation-for="ClubOrigin" class="text-danger"></span>
+            </div>
+            @*<div class="form-group">
+                <label asp-for="ClubPlayerQuantity" class="control-label"></label>
+                <input asp-for="ClubPlayerQuantity" class="form-control" />
+                <span asp-validation-for="ClubPlayerQuantity" class="text-danger"></span>
+            </div>*@
+            <div class="form-group">
+                <label asp-for="ClubCoachName" class="control-label"></label>
+                <input asp-for="ClubCoachName" class="form-control" />
+                <span asp-validation-for="ClubCoachName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ClubEstablishmentDate" class="control-label"></label>
+                <input asp-for="ClubEstablishmentDate" class="form-control" />
+                <span asp-validation-for="ClubEstablishmentDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Перейти до створення стадіону" class="btn btn-success mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index" class="btn btn-primary mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px">Назад до списку</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

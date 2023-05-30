@@ -1,0 +1,45 @@
+﻿@model FootBallWebLaba1.Models.Position
+@{
+    ViewData["Title"] = "Request";
+}
+
+<h1>Запит чемпіонати</h1>
+
+
+
+<h4>Знайти хоча б одну команду, яка має стільки ж або більше гравців з заданою позицію </h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            @using (Html.BeginForm("PosRequestPost", "Clubs"))
+            {
+                <div class="form-group">
+                    <label asp-for="PositionId" class="control-label"></label>
+                    <select asp-for="PositionId" class="form-control" asp-items="ViewBag.PositionId"></select>
+                </div>
+                <p>
+                    <label>Кількість гравців</label><br />
+                    @Html.TextBox("quantity","", new { type="number" })
+                </p>
+                <p>
+                    <input type="submit" class="btn btn-primary mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px" value="Запит" />
+                </p>
+            }
+        </div>
+        @* <p>
+        <a href="@Url.Action("ChampRequest", new {quantity = @ViewBag.quantity})"> <input type="button" value="Знайти" asp-action="Details" class="btn btn-success mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px" /></a>
+        </p>*@
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index" class="btn btn-primary mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px">Назад до списку</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

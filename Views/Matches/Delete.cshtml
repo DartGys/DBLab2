@@ -1,0 +1,57 @@
+﻿@model FootBallWebLaba1.Models.Match
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Видалення матчу</h1>
+
+<h3>При видаленні матчу видалится вся інформація повязана з ним<div>Ви впевнені, що хочете продовжити?</div></h3>
+<div>
+    <h4></h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.MatchDate)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.MatchDate)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.MatchDuration)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.MatchDuration)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Championship)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Championship.ChampionshipCountry)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.GuestClub)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.GuestClub.ClubName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.HostClub)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.HostClub.ClubName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Stadium)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Stadium.StadiumLocation)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="MatchId" />
+        <input type="submit" value="Видалити" class="btn btn-danger mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px" /> |
+        <a asp-action="Index" class="btn btn-primary mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px">Назад до списку</a>
+    </form>
+</div>

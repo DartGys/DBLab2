@@ -1,0 +1,86 @@
+﻿@model IEnumerable<FootBallWebLaba1.Models.Championship>
+
+@{
+    ViewData["Title"] = "Index";
+}
+@{
+    <h1>Чемпіонати</h1>
+}
+@if (User.IsInRole("admin"))
+{
+    <p>
+        <a asp-action="Create" class="btn btn-success mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px">Додати новий чемпіонат</a>
+    </p>
+        
+    <p>
+        <a asp-action="Request" class="btn btn-success mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px">Запит</a>
+    </p>
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ChampionshipCountry)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ChampionshipName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ChampionshipClubQuantity)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ChampionshipCountry)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ChampionshipName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ChampionshipClubQuantity)
+            </td>
+                
+                    <td>
+                        <a asp-action="Details"  class="btn btn-primary mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px"  asp-route-id="@item.ChampionshipId">Матчі</a>   <div>
+                        @if (User.IsInRole("admin"))
+                        {
+                        <a asp-action="Edit" class="btn btn-info mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px" asp-route-id="@item.ChampionshipId">Редагувати</a> 
+                <a asp-action="Delete" class="btn btn-danger mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px"  asp-route-id="@item.ChampionshipId">Видалити</a> 
+                        }
+                </div>
+            </td>
+            
+        </tr>
+}
+    </tbody>
+</table>
+
+@*<div class="container">
+    <div id="chart2"></div>
+</div>
+@section scripts
+    {
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+        google.charts.load('current', {'packages': ['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart()
+        {
+            $.get('api/Chart/JsonDataChamp', function (JsonDataChamp) {
+                data = google.visualization.arrayToDataTable(JsonDataChamp, false);
+                var option = {
+                    title: "Співідношення кількості матчів та чемпіонатів",
+                    width: 400,
+                    height: 200
+                };
+                chart = new google.visualization.BarChart(document.getElementById('chart2'));
+                chart.draw(data, option);
+            })
+        }
+    </script>
+    }*@

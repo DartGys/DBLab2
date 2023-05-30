@@ -1,0 +1,71 @@
+﻿@model IEnumerable<FootBallWebLaba1.Models.Player>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Список усіх гравців</h1>
+
+
+<p>
+    <a asp-action="Request" class="btn btn-success mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px">Запит</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.PlayerName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PlayerNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Position)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PlayerSalary)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PlayerBirthDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Club)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PlayerName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PlayerNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Position.PositionName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PlayerSalary)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PlayerBirthDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Club.ClubName)
+            </td>
+{
+            <td>
+                    <a asp-action="Details"  class="btn btn-primary mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px" asp-route-id="@item.PlayerId">Команда</a>
+                    @if (User.IsInRole("admin"))
+                    {
+                    <a asp-action="Edit" class="btn btn-info mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px" asp-route-id="@item.PlayerId">Редагувати</a> 
+                    }
+            </td>
+}
+        </tr>
+}
+    </tbody>
+</table>

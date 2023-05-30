@@ -1,0 +1,39 @@
+﻿@model FootBallWebLaba1.Models.Championship
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Видалення чемпіонату</h1>
+
+<h3>При видаленні чемпіонату, видалиться усі його матчі та моменти <div>Ви впевеннні що хочете продовжити?</div></h3>
+<div>
+    <h4>Championship</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ChampionshipCountry)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ChampionshipCountry)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ChampionshipName)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ChampionshipName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ChampionshipClubQuantity)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ChampionshipClubQuantity)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="ChampionshipId" />
+        <input type="submit" value="Видалити" class="btn btn-danger mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px" /> |
+        <a asp-action="Index" class="btn btn-primary mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px">Назад до списку</a>
+    </form>
+</div>

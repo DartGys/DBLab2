@@ -1,0 +1,53 @@
+﻿@model IEnumerable<FootBallWebLaba1.Models.ScoredGoal>
+
+@{
+    ViewData["Title"] = "Гол за матчу";
+}
+
+<h1>Голи в матчі</h1>
+@if (User.IsInRole("admin"))
+{
+    <p>
+        @*@Html.ActionLink("Додати новий гол","Create", new {matchId = ViewBag.MatchId})*@
+        <a href="@Url.Action("Create", new {matchId = ViewBag.MatchId})"> <input type="button" value="Додати новий гол" asp-action="Details" class="btn btn-success mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px" /></a>
+
+    </p>
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ScoredMinute)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Match)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Player)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ScoredMinute)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Match.MatchId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Player.PlayerName)
+            </td>
+            <td>
+                    <div> <a asp-action="Details" class="btn btn-primary mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px" asp-route-id="@item.ScoredGoalId">Інфо гравця</a> </div>
+                @if (User.IsInRole("admin"))
+                {
+                    <a asp-action="Delete"  class="btn btn-danger mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px" asp-route-id="@item.ScoredGoalId">Видалити</a>
+                }
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

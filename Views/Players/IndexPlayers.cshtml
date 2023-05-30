@@ -1,0 +1,70 @@
+﻿@model IEnumerable<FootBallWebLaba1.Models.Player>
+
+@{
+    ViewData["Title"] = "IndexPlayers";
+}
+
+<h1>Гравець команди @ViewBag.ClubName</h1>
+
+@if (User.IsInRole("admin"))
+{
+    <p>
+        @Html.ActionLink("Додати нового гравця", "Create", new {clubId = ViewBag.ClubId})
+    </p>
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.PlayerName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PlayerNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Position)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PlayerSalary)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PlayerBirthDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Club)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PlayerName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PlayerNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Position.PositionName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PlayerSalary)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PlayerBirthDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Club.ClubName)
+            </td>
+            @if (User.IsInRole("admin"))
+{
+            <td>
+                <a asp-action="Edit"  class="btn btn-info mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px" asp-route-id="@item.PlayerId">Редагувати</a> 
+                    <a asp-action="Delete" class="btn btn-danger mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px" asp-route-id="@item.PlayerId">Видалити</a>
+            </td>
+}
+        </tr>
+}
+    </tbody>
+</table>

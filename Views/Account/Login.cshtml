@@ -1,0 +1,26 @@
+﻿@model FootBallWebLaba1.ViewModels.LoginViewModel
+
+<h2>Вхід</h2>
+<form method="post" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Model.ReturnUrl">
+     <div asp-validation-summary="ModelOnly"></div>
+    <div class="mb-2">
+         <label asp-for="Email"></label>
+         <br />
+         <input asp-for="Email" />
+         <span asp-validation-for="Email"></span>
+      </div>
+      <div class="mb-2">
+             <label asp-for="Password"></label>
+             <br />
+             <input asp-for="Password" />
+             <span asp-validation-for="Password"></span>
+      </div>
+      <div class="mb-3">
+                 <input asp-for="RememberMe" />
+                 <span asp-validation-for="RememberMe"></span>
+        <label asp-for="RememberMe"></label>
+          </div>
+          <div>
+        <input type="submit" value="Увійти" class="btn btn-info" style="font-size: 17px" />
+          </div>
+</form>

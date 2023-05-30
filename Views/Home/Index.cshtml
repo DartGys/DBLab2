@@ -1,0 +1,23 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@if (User.Identity.IsAuthenticated)
+{
+    <p>
+        @User.Identity.Name
+    </p>
+
+    <form method="post" asp-controller="Account" asp-action="Logout">
+        <input type="submit" value="Вихід" class="btn btn-info" />
+    </form>
+}
+else
+{
+    <h1 style="margin-top: 100px; text-align: center">Футбольні чемпіонати</h1>
+    <div class="d-flex justify-content-center" style="gap:10px; margin-top: 80px">
+        <a asp-controller="Account" asp-action="Login" class="btn btn-info" style="font-size: 20px;"> Вхід</a>
+        <a asp-controller="Account" asp-action="Register" class="btn btn-info" style="font-size: 20px;"> Реєстація </a>
+    </div>
+}
+
