@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FootBallWebLaba1.Models;
 using Microsoft.AspNetCore.Authorization;
+using ClosedXML.Excel;
 
 namespace FootBallWebLaba1.Controllers
 {
@@ -44,7 +45,8 @@ namespace FootBallWebLaba1.Controllers
                 if (request.Count > quantity)
                     result.Add(champ[i]);
             }
-
+            ExportStatic.championshipSet(result);
+            ViewBag.hidden = 1;
             return View("Index", result);
         }
 
@@ -207,6 +209,41 @@ namespace FootBallWebLaba1.Controllers
         private bool ChampionshipExists(int id)
         {
           return _context.Championships.Any(e => e.ChampionshipId == id);
+        }
+
+        public ActionResult Export()
+        {
+            using (XLWorkbook workbook = new XLWorkbook())
+            {
+
+                var champioships = ExportStatic.Championships;
+
+                ViewBag.hidden = 1;
+                if (champioships.Count == 0) return View("Index", champioships);
+
+                foreach (var championship in champioships)
+                {
+                    var worksheet = workbook.Worksheets.Add(championship.ChampionshipName);
+                    worksheet.Cell("A1").Value = "Назва";
+                    worksheet.Cell("B1").Value = "Країна";
+                    worksheet.Cell("C1").Value = "Кількість команд";
+                    worksheet.Row(1).Style.Font.Bold = true;
+
+                    worksheet.Cell(2, 1).Value = championship.ChampionshipName;
+                    worksheet.Cell(2, 2).Value = championship.ChampionshipCountry;
+                    worksheet.Cell(2, 3).Value = championship.ChampionshipClubQuantity;
+                }
+
+                using (var stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    stream.Flush();
+                    return new FileContentResult(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                    {
+                        FileDownloadName = $"champioships.xlsx"
+                    };
+                }
+            }
         }
     }
 }

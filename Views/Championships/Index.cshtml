@@ -6,7 +6,7 @@
 @{
     <h1>Чемпіонати</h1>
 }
-@if (User.IsInRole("admin"))
+@if (User.IsInRole("admin") && ViewBag.hidden != 1)
 {
     <p>
         <a asp-action="Create" class="btn btn-success mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px">Додати новий чемпіонат</a>
@@ -15,6 +15,14 @@
     <p>
         <a asp-action="Request" class="btn btn-success mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px">Запит</a>
     </p>
+}
+
+@if (ViewBag.hidden == 1)
+{
+    <div class="col-6">
+        <p style="font-size:15px">Завантаження інформації в файл</p>
+        <a href='@Url.Action("Export")'><input type="button" value="Завантажити" class="btn btn-primary mb-3" /></a>
+    </div>
 }
 <table class="table">
     <thead>
@@ -43,16 +51,18 @@
             <td>
                 @Html.DisplayFor(modelItem => item.ChampionshipClubQuantity)
             </td>
-                
+                @if (ViewBag.hidden != 1)
+                {
                     <td>
                         <a asp-action="Details"  class="btn btn-primary mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px"  asp-route-id="@item.ChampionshipId">Матчі</a>   <div>
-                        @if (User.IsInRole("admin"))
-                        {
-                        <a asp-action="Edit" class="btn btn-info mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px" asp-route-id="@item.ChampionshipId">Редагувати</a> 
-                <a asp-action="Delete" class="btn btn-danger mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px"  asp-route-id="@item.ChampionshipId">Видалити</a> 
-                        }
-                </div>
+                            @if (User.IsInRole("admin"))
+                            {
+                                <a asp-action="Edit" class="btn btn-info mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px" asp-route-id="@item.ChampionshipId">Редагувати</a> 
+                                <a asp-action="Delete" class="btn btn-danger mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px"  asp-route-id="@item.ChampionshipId">Видалити</a>
+                            }
+                        </div>
             </td>
+            }
             
         </tr>
 }

@@ -13,7 +13,7 @@
 
 <h1>Матч чемпіонату @ViewBag.ChampionshipName</h1>
 
-@if (User.IsInRole("admin"))
+@if (User.IsInRole("admin") && ViewBag.hidden != 1)
 {
     <p>
         <a href="@Url.Action("Create", new {championshipId = ViewBag.ChampionshipId})"> <input type="button" value="Додати новий матч" asp-action="Details" class="btn btn-success mt-1 mb-1" style="font-size:12px; padding:5px 7px; border-radius: 10px" /></a>
@@ -24,6 +24,13 @@
     </p>
 }
 
+@if (ViewBag.hidden == 1)
+{
+    <div class="col-6">
+        <p style="font-size:15px">Завантаження інформації в файл</p>
+        <a href='@Url.Action("Export")'><input type="button" value="Завантажити" class="btn btn-primary mb-3" /></a>
+    </div>
+}
 
 <table class="table">
     <thead>
@@ -70,21 +77,24 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Stadium.StadiumLocation)
             </td>
-            <td>
-                    <div class="d-inline-block">
-                        <a asp-action="Details" class="btn btn-primary mt-1 mb-1 d-inline-block" style="font-size:12px; padding:5px 7px; border-radius: 10px" asp-route-id="@item.MatchId">Статистика матчу</a>
-                        <a asp-controller="Stadiums" asp-action="DetailsStadium" class="btn btn-primary mt-1 mb-1 d-inline-block" style="font-size:12px; padding:5px 7px; border-radius: 10px" asp-route-id="@item.StaidumId">Стадіон</a>
-                    </div>
-                    <div class="d-inline-block">
-                        <a asp-controller="Clubs" asp-action="Details" class="btn btn-primary mt-1 mb-1 d-inline-block" style="font-size:12px; padding:5px 7px; border-radius: 10px" asp-route-id="@item.HostClubId">Команда хазяїв</a>
-                        <a asp-controller="Clubs" asp-action="Details" class="btn btn-primary mt-1 mb-1 d-inline-block" style="font-size:12px; padding:5px 7px; border-radius: 10px" asp-route-id="@item.GuestClubId">Команда гостей</a>
-                    </div>
-                    @if (User.IsInRole("admin"))
+                @if (ViewBag.hidden != 1)
                 {
-                    <a asp-action="Edit" class="btn btn-info mt-1 mb-1 d-inline-block" style="font-size:12px; padding:5px 7px; border-radius: 10px" asp-route-id="@item.MatchId">Редагувати</a> 
-                    <a asp-action="Delete" class="btn btn-danger mt-1 mb-1 d-inline-block" style="font-size:12px; padding:5px 7px; border-radius: 10px" asp-route-id="@item.MatchId">Видалити</a>
-                }
-            </td>
+                    <td>
+                        <div class="d-inline-block">
+                            <a asp-action="Details" class="btn btn-primary mt-1 mb-1 d-inline-block" style="font-size:12px; padding:5px 7px; border-radius: 10px" asp-route-id="@item.MatchId">Статистика матчу</a>
+                            <a asp-controller="Stadiums" asp-action="DetailsStadium" class="btn btn-primary mt-1 mb-1 d-inline-block" style="font-size:12px; padding:5px 7px; border-radius: 10px" asp-route-id="@item.StaidumId">Стадіон</a>
+                        </div>
+                        <div class="d-inline-block">
+                            <a asp-controller="Clubs" asp-action="Details" class="btn btn-primary mt-1 mb-1 d-inline-block" style="font-size:12px; padding:5px 7px; border-radius: 10px" asp-route-id="@item.HostClubId">Команда хазяїв</a>
+                            <a asp-controller="Clubs" asp-action="Details" class="btn btn-primary mt-1 mb-1 d-inline-block" style="font-size:12px; padding:5px 7px; border-radius: 10px" asp-route-id="@item.GuestClubId">Команда гостей</a>
+                        </div>
+                        @if (User.IsInRole("admin"))
+                        {
+                            <a asp-action="Edit" class="btn btn-info mt-1 mb-1 d-inline-block" style="font-size:12px; padding:5px 7px; border-radius: 10px" asp-route-id="@item.MatchId">Редагувати</a> 
+                            <a asp-action="Delete" class="btn btn-danger mt-1 mb-1 d-inline-block" style="font-size:12px; padding:5px 7px; border-radius: 10px" asp-route-id="@item.MatchId">Видалити</a>
+                        }
+                    </td>
+            }
         </tr>
 }
     </tbody>

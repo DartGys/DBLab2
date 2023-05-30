@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using FootBallWebLaba1.Models;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
+using ClosedXML.Excel;
 
 namespace FootBallWebLaba1.Controllers
 {
@@ -47,7 +48,7 @@ namespace FootBallWebLaba1.Controllers
 
         public async Task<IActionResult> PlayerRequest(int playerId)
         {
-            var players = _context.Players.Where(p => p.PlayerId != playerId).ToList();
+            var players = _context.Players.Where(p => p.PlayerId != playerId).Include(c => c.Club).Include(c => c.Position).ToList();
 
             int quantity = _context.ScoredGoals.Where(p => p.PlayerId == playerId).Count();
 
@@ -60,7 +61,8 @@ namespace FootBallWebLaba1.Controllers
                 if (scoredGoals.Count >= quantity)
                     result.Add(players[i]);
             }
-
+            ExportStatic.playerSet(result);
+            ViewBag.hidden = 1;
             return View("Index", result);
         }
 
@@ -108,7 +110,7 @@ namespace FootBallWebLaba1.Controllers
                 DateTime playerDate = player.PlayerBirthDate;
 
                 int age = curDate.Year - playerDate.Year;
-                if(age < 16 || age > 50)
+                if (age < 16 || age > 50)
                 {
                     ViewBag.ClubId = clubId;
                     ViewData["PositionId"] = new SelectList(_context.Positions, "PositionId", "PositionName");
@@ -189,7 +191,7 @@ namespace FootBallWebLaba1.Controllers
                     ModelState.AddModelError("PlayerName", "Гравець з таким іменем існує");
                     return View(player);
                 }
-                if(playerInClub != null)
+                if (playerInClub != null)
                 {
                     ViewData["ClubId"] = new SelectList(_context.Clubs, "ClubId", "ClubName", player.ClubId);
                     ModelState.AddModelError("PlayerNumber", "Цей номер уже зайнятий");
@@ -263,12 +265,54 @@ namespace FootBallWebLaba1.Controllers
                 _context.Update(club);
             }
             await _context.SaveChangesAsync();
-            return RedirectToAction("Index","Clubs");
+            return RedirectToAction("Index", "Clubs");
         }
 
         private bool PlayerExists(int id)
         {
-          return _context.Players.Any(e => e.PlayerId == id);
+            return _context.Players.Any(e => e.PlayerId == id);
+        }
+
+        public ActionResult Export()
+        {
+            using (XLWorkbook workbook = new XLWorkbook())
+            {
+
+                var players = ExportStatic.Players;
+
+                ViewBag.hidden = 1;
+                if (players.Count == 0) return View("Index", players);
+
+                foreach (var player in players)
+                {
+                    var worksheet = workbook.Worksheets.Add(player.PlayerName);
+                    worksheet.Cell("A1").Value = @"Ім'я";
+                    worksheet.Cell("B1").Value = "Номер";
+                    worksheet.Cell("C1").Value = "Позиція";
+                    worksheet.Cell("D1").Value = "Зарплата";
+                    worksheet.Cell("E1").Value = "Дата народження";
+                    worksheet.Cell("F1").Value = "Команда";
+                    worksheet.Row(1).Style.Font.Bold = true;
+
+                    worksheet.Cell(2, 1).Value = player.PlayerName;
+                    worksheet.Cell(2, 2).Value = player.PlayerNumber;
+                    worksheet.Cell(2, 3).Value = player.Position.PositionName;
+                    worksheet.Cell(2, 4).Value = player.PlayerSalary;
+                    worksheet.Cell(2, 5).Value = player.PlayerBirthDate.ToShortDateString();
+                    worksheet.Cell(2, 6).Value = player.Club.ClubName;
+
+                }
+
+                using (var stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    stream.Flush();
+                    return new FileContentResult(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                    {
+                        FileDownloadName = $"players.xlsx"
+                    };
+                }
+            }
         }
     }
 }

@@ -51,7 +51,8 @@ namespace FootBallWebLaba1.Controllers
                 if (request.Count >= quantity)
                     result.Add(clubs[i]);
             }
-
+            ViewBag.hidden = 1;
+            ExportStatic.clubSet(result);
             return View("Index", result);
         }
 
@@ -82,7 +83,8 @@ namespace FootBallWebLaba1.Controllers
                 }
 
             }
-
+            ExportStatic.clubSet(result);
+            ViewBag.hidden = 1;
             return View("Index", result);
         }
 
@@ -115,7 +117,8 @@ namespace FootBallWebLaba1.Controllers
 
                 goalSum = 0;
             }
-
+            ExportStatic.clubSet(result);
+            ViewBag.hidden = 1;
             return View("Index", result);
         }
 
@@ -138,7 +141,8 @@ namespace FootBallWebLaba1.Controllers
                 if (mathes != null)
                     result.Add(clubs[i]);
             }
-
+            ExportStatic.clubSet(result);
+            ViewBag.hidden = 1;
             return View("Index", result);
         }
 
@@ -163,7 +167,8 @@ namespace FootBallWebLaba1.Controllers
                 if (mathes.Count >= quantity)
                     result.Add(clubs[i]);
             }
-
+            ExportStatic.clubSet(result);
+            ViewBag.hidden = 1;
             return View("Index", result);
         }
 
@@ -211,7 +216,8 @@ where m.MatchId IN(
                     }
                 }
             }
-
+            ExportStatic.clubSet(result);
+            ViewBag.hidden = 1;
             return View("Index", result.ToList().Distinct());
         }
 
@@ -268,7 +274,8 @@ and m.GuestClubId NOT IN(
                     }
                 }
             }
-
+            ExportStatic.clubSet(result);
+            ViewBag.hidden = 1;
             return View("Index", result.ToList().Distinct());
         }
 
@@ -324,7 +331,8 @@ where m.HostClubId NOT IN(
                     }
                 }
             }
-
+            ExportStatic.clubSet(result);
+            ViewBag.hidden = 1;
             return View("Index", result.ToList().Distinct());
         }
 
@@ -545,54 +553,33 @@ where m.HostClubId NOT IN(
             return _context.Clubs.Any(e => e.ClubId == id);
         }
 
-        public ActionResult ExportToExcel()
+        public ActionResult Export()
         {
             using (XLWorkbook workbook = new XLWorkbook())
             {
-                // Отримати дані з бази даних
-                var clubs = _context.Clubs
-                    .Include(c => c.Players)
-                    .ThenInclude(p => p.Position)
-                    .Include(c => c.Stadiums).ToList();
 
-                // Створити новий Excel 
-                var worksheet = workbook.Worksheets.Add("Matches");
+                var clubs = ExportStatic.Clubs;
 
-                // Додати заголовки стовпців
-                worksheet.Cell(1, 1).Value = "ClubId";
-                worksheet.Cell(1, 2).Value = "ClubName";
-                worksheet.Cell(1, 3).Value = "ClubOrigin";
-                worksheet.Cell(1, 4).Value = "ClubCoachName";
-                worksheet.Cell(1, 5).Value = "ClubEstablishmentDate";
-                worksheet.Cell(1, 6).Value = "StadiumLocation";
-                worksheet.Cell(1, 7).Value = "StadiumCapacity";
-                worksheet.Cell(1, 8).Value = "StadiumEstablismentDate";
-                worksheet.Cell(1, 9).Value = "PlayerName";
-                worksheet.Cell(1, 10).Value = "PlayerNumber";
-                worksheet.Cell(1, 11).Value = "PositionName";
-                worksheet.Cell(1, 12).Value = "PlayerSalary";
-                worksheet.Cell(1, 13).Value = "PlayerBirthDate";
+                ViewBag.hidden = 1;
+                if (clubs.Count == 0) return View("Index", clubs);
 
-                // Додати дані з бази даних
-                for (int i = 0; i < clubs.Count; i++)
+                foreach (var club in clubs)
                 {
-                    var club = clubs[i];
-                    worksheet.Cell(i + 2, 1).Value = club.ClubId;
-                    worksheet.Cell(i + 2, 2).Value = club.ClubName;
-                    worksheet.Cell(i + 2, 3).Value = club.ClubOrigin;
-                    worksheet.Cell(i + 2, 4).Value = club.ClubCoachName;
-                    worksheet.Cell(i + 2, 5).Value = club.ClubEstablishmentDate.ToShortDateString();
-                    worksheet.Cell(i + 2, 6).Value = string.Join(",",club.Stadiums.Select(s => s.StadiumLocation));
-                    worksheet.Cell(i + 2, 7).Value = string.Join(",", club.Stadiums.Select(s => s.StadiumCapacity));
-                    worksheet.Cell(i + 2, 8).Value = string.Join(",",club.Stadiums.Select(s => s.StadiumEstablismentDate.ToShortDateString()));
-                    worksheet.Cell(i + 2, 9).Value = string.Join(",", club.Players.Select(p => p.PlayerName));
-                    worksheet.Cell(i + 2, 10).Value = string.Join(",", club.Players.Select(p => p.PlayerNumber));
-                    worksheet.Cell(i + 2, 11).Value = string.Join(",", club.Players.Select(p => p.Position.PositionName));
-                    worksheet.Cell(i + 2, 12).Value = string.Join(";", club.Players.Select(p => p.PlayerSalary));
-                    worksheet.Cell(i + 2, 13).Value = string.Join(",", club.Players.Select(p => p.PlayerBirthDate.ToShortDateString()));
+                    var worksheet = workbook.Worksheets.Add(club.ClubName);
+                    worksheet.Cell("A1").Value = "Назва";
+                    worksheet.Cell("B1").Value = "Походження";
+                    worksheet.Cell("C1").Value = "Кількість гравців";
+                    worksheet.Cell("D1").Value = "Тренер";
+                    worksheet.Cell("E1").Value = "Дата заснування";
+                    worksheet.Row(1).Style.Font.Bold = true;
+
+                    worksheet.Cell(2, 1).Value = club.ClubName;
+                    worksheet.Cell(2, 2).Value = club.ClubOrigin;
+                    worksheet.Cell(2, 3).Value = club.ClubPlayerQuantity;
+                    worksheet.Cell(2, 4).Value = club.ClubCoachName;
+                    worksheet.Cell(2, 5).Value = club.ClubEstablishmentDate.ToShortDateString();
                 }
 
-                // Зберегти файл Excel
                 using (var stream = new MemoryStream())
                 {
                     workbook.SaveAs(stream);
@@ -603,147 +590,6 @@ where m.HostClubId NOT IN(
                     };
                 }
             }
-        }
-
-
-        public async Task<IActionResult> ImportFromExcel(IFormFile fileExel)
-        {
-            string importSuccess = "Файл завнтажено успішно. ";
-            if (fileExel != null && fileExel.Length > 0)
-            {
-                using (var stream = fileExel.OpenReadStream())
-                {
-                    try
-                    {
-                        XLWorkbook workbook = new XLWorkbook(stream);
-                    }
-                    catch
-                    {
-                        return RedirectToAction("Index", new { importSuccess = "Формат файлу невірний" });
-                    }
-                    using (XLWorkbook workbook = new XLWorkbook(stream))
-                    {
-                        var worksheet = workbook.Worksheet(1);
-                        var row = 2;
-                        var failedAdd = new List<int>();
-                        var clubs = new List<Club>();
-                        while (!worksheet.Cell(row, 1).IsEmpty())
-                        {
-                            var club = new Club();
-
-                            // Отримати дані з рядка
-                  
-                            club.ClubName = worksheet.Cell(row, 2).GetValue<string>();
-                            club.ClubOrigin = worksheet.Cell(row, 3).GetValue<string>();
-                            club.ClubCoachName = worksheet.Cell(row, 4).GetValue<string>();
-                            club.ClubEstablishmentDate = Convert.ToDateTime(worksheet.Cell(row, 5).GetValue<string>());
-
-                            var clubCheck = _context.Clubs.FirstOrDefault(c => c.ClubName == club.ClubName || c.ClubOrigin == club.ClubOrigin || c.ClubCoachName == club.ClubCoachName);
-
-                            if (clubCheck != null)
-                            {
-                                failedAdd.Add(row);
-                                string clubProperty = string.Empty;
-                                if (clubCheck.ClubName == club.ClubName) clubProperty += $"назва: {club.ClubName}";
-                                if (clubCheck.ClubOrigin == club.ClubOrigin) clubProperty += string.Join(", ", $"походження: {club.ClubOrigin}");
-                                if (clubCheck.ClubCoachName == club.ClubCoachName) clubProperty += string.Join(", ", $"тренер: {club.ClubCoachName}");
-                                importSuccess += $"Команда з назвою {club.ClubName} не доданаc, через те що {clubProperty} уже зайняті іншими командами. ";
-                            }
-
-                            if(clubCheck == null)
-                            clubs.Add(club);
-                            row++;
-                        }
-
-                        // Зберегти дані в базі даних
-                        await _context.Clubs.AddRangeAsync(clubs);
-                        await _context.SaveChangesAsync();
-                        row = 2;
-                        int clubCount = 0;
-                        var stadiums = new List<Stadium>();
-                        var players = new List<Player>();
-                        while (!worksheet.Cell(row, 1).IsEmpty())
-                        {
-                            if (failedAdd.Contains(row))
-                            {
-                                row++;
-                                continue;
-                            }
-
-                            var stadium = new Stadium();
-
-                            stadium.ClubId = clubs[clubCount].ClubId;
-                            stadium.StadiumLocation = worksheet.Cell(row, 6).GetValue<string>();
-                            stadium.StadiumCapacity = Convert.ToInt32(worksheet.Cell(row, 7).GetValue<string>());
-                            stadium.StadiumEstablismentDate = Convert.ToDateTime(worksheet.Cell(row, 8).GetValue<string>());
-
-                            var stadiumCheck = _context.Stadiums.FirstOrDefault(s => s.StadiumLocation == stadium.StadiumLocation);
-                            if (stadiumCheck != null)
-                            {
-                                importSuccess += $"Команда {clubs[clubCount].ClubName} не була додана, тому що локація {stadium.StadiumLocation} зайнята. Змініть її і спробуйте додати команду ще раз. ";
-                                _context.Clubs.Remove(clubs[clubCount]);
-                                clubs.RemoveAt(clubCount);
-                                await _context.SaveChangesAsync();
-                                row++;
-                                clubCount++;
-                                continue;
-                            }
-
-
-                            var playerName = worksheet.Cell(row, 9).GetValue<string>();
-                            var playerNumber = worksheet.Cell(row, 10).GetValue<string>();
-                            var playerPosition = worksheet.Cell(row, 11).GetValue<string>();
-                            var playerSalary = worksheet.Cell(row, 12).GetValue<string>();
-                            var playerBirthDate = worksheet.Cell(row, 13).GetValue<string>();
-
-                            var playerNameArray = playerName.Split(',');
-                            var playerNumberArray = playerNumber.Split(',');
-                            var playerPositionArray = playerPosition.Split(',');
-                            var playerSalaryArray = playerSalary.Split(';');
-                            var playerBirthDateArray = playerBirthDate.Split(',');
-
-                            for(int i = 0; i< playerNameArray.Length; i++)
-                            {
-                                var player = new Player();
-                                player.ClubId = clubs[clubCount].ClubId;
-                                player.PlayerName = playerNameArray[i];
-                                player.PlayerNumber = Convert.ToInt32(playerNumberArray[i]);
-                                player.PositionId = _context.Positions.First(p => p.PositionName == playerPositionArray[i]).PositionId;
-                                player.PlayerSalary = Convert.ToDecimal(playerSalaryArray[i]);
-                                player.PlayerBirthDate = Convert.ToDateTime(playerBirthDateArray[i]);
-
-                                var playerCheck = _context.Players.FirstOrDefault(p => p.PlayerName == player.PlayerName);
-                                if (playerCheck != null)
-                                    importSuccess += $"Гравець {player.PlayerName} команди {clubs[clubCount].ClubName} не був доданий, тому що таке гравець з таким іменем уже існує. ";
-
-                                if (playerCheck == null)
-                                {
-                                    clubs[clubCount].ClubPlayerQuantity++;
-                                    players.Add(player);
-                                }
-                            }
-                            if(stadiumCheck == null)
-                            stadiums.Add(stadium);
-                            row++;
-                            clubCount++;
-                        }
-
-                        _context.Clubs.UpdateRange(clubs);
-                        await _context.SaveChangesAsync();
-
-                        await _context.Stadiums.AddRangeAsync(stadiums);
-                        await _context.SaveChangesAsync();
-
-                        await _context.Players.AddRangeAsync(players);
-                        await _context.SaveChangesAsync();
-
-                    }
-                }
-            }
-
-            if (fileExel == null) return RedirectToAction("Index", new { importSuccess = "Ви не вибрали файл для завантаженн" });
-            if (fileExel.Length < 0) return RedirectToAction("Index", new { importSuccess = "Вибраний файл пустий, або містить хибну інформацію" });
-            return RedirectToAction("Index", new { importSuccess = importSuccess });
         }
     } 
 }
