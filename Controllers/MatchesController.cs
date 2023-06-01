@@ -162,19 +162,6 @@ namespace FootBallWebLaba1.Controllers
                     return View(match);
                 }    
 
-                var checkAnotherChamp = await _context.Matches.FirstOrDefaultAsync(c => c.ChampionshipId != match.ChampionshipId && (c.HostClubId == match.HostClubId || c.GuestClubId == match.HostClubId || c.HostClubId == match.GuestClubId || c.GuestClubId == match.GuestClubId));
-                    
-                if(checkAnotherChamp != null)
-                {
-                    ModelState.AddModelError("MatchDuration", "Вказана команда уже бере участь в іншому чемпіонаті");
-                    ViewData["ChampionshipId"] = new SelectList(_context.Championships, "ChampionshipId", "ChampionshipCountry", match.ChampionshipId);
-                    ViewData["GuestClubId"] = new SelectList(_context.Clubs, "ClubId", "ClubName", match.GuestClubId);
-                    ViewData["HostClubId"] = new SelectList(_context.Clubs, "ClubId", "ClubName", match.HostClubId);
-                    ViewData["StaidumId"] = new SelectList(_context.Stadiums, "StaidumId", "StadiumLocation", match.StaidumId);
-                    ViewBag.ChampionshipId = championshipId;
-                    return View(match);
-                }
-
                 _context.Add(match);
                 await _context.SaveChangesAsync();
                 //return RedirectToAction(nameof(Index));

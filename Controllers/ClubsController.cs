@@ -186,18 +186,23 @@ namespace FootBallWebLaba1.Controllers
             {
 
                 string query = @"
-                    Select c.ClubId
-from Club c
-join Match m on m.HostClubId = c.ClubId or m.GuestClubId = c.ClubId
-where m.MatchId IN(
-    select m3.MatchId
-    from Match m3
-    where m3.StaidumId in (
-        select m4.StaidumId
-        From Match m4
-        WHERE m4.HostClubId = @ClubId or m4.GuestClubId = @ClubId 
-        )
-) and c.ClubId <> @ClubId";         
+SELECT c.ClubId
+FROM Club c
+WHERE NOT EXISTS (
+    SELECT ch.ChampionshipId
+    FROM Championship ch
+    WHERE ch.ChampionshipId IN (
+        SELECT DISTINCT m.ChampionshipId
+        FROM Match m
+        WHERE (m.HostClubId = (SELECT ClubId FROM Club WHERE ClubId = @ClubId)
+               OR m.GuestClubId = (SELECT ClubId FROM Club WHERE ClubId = @ClubId))
+    )
+    AND ch.ChampionshipId NOT IN (
+        SELECT DISTINCT m.ChampionshipId
+        FROM Match m
+        WHERE (m.HostClubId = c.ClubId OR m.GuestClubId = c.ClubId)
+    )
+) and c.ClubId <> @ClubId;";         
 
 
                 using (SqlCommand command = new SqlCommand(query, connection))
@@ -232,31 +237,37 @@ where m.MatchId IN(
             List<Club> result = new List<Club>();
 
             using (SqlConnection connection = new SqlConnection(@"Server = DESKTOP-CFOLTDF\SQLEXPRESS; Database = FootBallBD; Trusted_Connection = true; MultipleActiveResultSets = true; TrustServerCertificate = true"))
-            {
+                {
 
                 string query = @"
-Select c.ClubId
-from Club c
-join Match m on m.HostClubId = c.ClubId or m.GuestClubId = c.ClubId
-where m.GuestClubId IN(
-    select m3.GuestClubId
-    from Match m3
-    where m3.StaidumId in (
-        select m4.StaidumId
-        From Match m4
-        WHERE m4.HostClubId = @ClubId
+SELECT c.ClubId
+FROM Club c
+WHERE EXISTS (
+    SELECT 1
+    FROM Match m
+    INNER JOIN Championship ch ON m.ChampionshipId = ch.ChampionshipId
+    WHERE (m.HostClubId = c.ClubId OR m.GuestClubId = c.ClubId)
+        AND ch.ChampionshipId IN (
+            SELECT ch2.ChampionshipId
+            FROM Club c2
+            INNER JOIN Match m2 ON (m2.HostClubId = c2.ClubId OR m2.GuestClubId = c2.ClubId)
+            INNER JOIN Championship ch2 ON m2.ChampionshipId = ch2.ChampionshipId
+            WHERE c2.CLubId = @ClubId
         )
 )
-and m.GuestClubId NOT IN(
-    select m5.GuestClubId
-    from Match m5
-    where m5.StaidumId not in (
-        select m6.StaidumId
-        From Match m6
-        WHERE m6.HostClubId = @ClubId
+AND NOT EXISTS (
+    SELECT 1
+    FROM Match m3
+    INNER JOIN Championship ch3 ON m3.ChampionshipId = ch3.ChampionshipId
+    WHERE (m3.HostClubId = c.ClubId OR m3.GuestClubId = c.ClubId)
+        AND ch3.ChampionshipId NOT IN (
+            SELECT ch4.ChampionshipId
+            FROM Club c4
+            INNER JOIN Match m4 ON (m4.HostClubId = c4.ClubId OR m4.GuestClubId = c4.ClubId)
+            INNER JOIN Championship ch4 ON m4.ChampionshipId = ch4.ChampionshipId
+            WHERE c4.ClubId = @ClubId
         )
-) and c.ClubId <> @ClubId
-";
+) and c.ClubId <> @ClubId;";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
@@ -293,27 +304,23 @@ and m.GuestClubId NOT IN(
             {
 
                 string query = @"
-                Select c.ClubId
-from Club c
-join Match m on m.HostClubId = c.ClubId or m.GuestClubId = c.ClubId
-where m.HostClubId NOT IN(
-    select m3.HostClubId
-    from Match m3
-    where m3.StaidumId in (
-        select m4.StaidumId
-        From Match m4
-        WHERE m4.GuestClubId = @ClubId 
-        )
+SELECT c.ClubId
+FROM Club c
+WHERE NOT EXISTS (
+    SELECT ch.ChampionshipId
+    FROM Championship ch
+    WHERE ch.ChampionshipId IN (
+        SELECT DISTINCT m.ChampionshipId
+        FROM Match m
+        WHERE (m.HostClubId = (SELECT ClubId FROM Club WHERE ClubId = @ClubId)
+               OR m.GuestClubId = (SELECT ClubId FROM Club WHERE ClubId = @ClubId))
     )
-    and m.GuestClubId NOT IN(
-    select m5.GuestClubId
-    from Match m5
-    where m5.StaidumId in (
-        select m6.StaidumId
-        From Match m6
-        WHERE m6.HostClubId = @ClubId 
-        )
-    )";
+    AND ch.ChampionshipId IN (
+        SELECT DISTINCT m.ChampionshipId
+        FROM Match m
+        WHERE (m.HostClubId = c.ClubId OR m.GuestClubId = c.ClubId)
+    )
+) and c.ClubId <> @ClubId;";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
